@@ -10,6 +10,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.luis.inventoryapp.R;
 import com.example.luis.inventoryapp.data.InventoryContract.InventoryEntry;
 
 /**
@@ -62,26 +63,23 @@ public class InventoryCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // find fields to populate in inflate template
-        TextView textViewSupplier = view.findViewById(R.id.tvSupplier);
         TextView textViewStock = view.findViewById(R.id.tvStock);
-        //TextView textViewQuantity = (TextView)view.findViewById(R.id.tvQuantity);
+        TextView textViewSupplier = view.findViewById(R.id.tvSupplier);
+        //TextView textViewQuantity = view.findViewById(R.id.tvQuantity);
 
         //Find the columns of rings attributes that we're  interested in
-        int supplierColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SUPPLIER);
         int stockColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_STOCK_ID);
-
-
-        Log.i(LOG_TAG,"This is the value of " + stockColumnIndex+" and "+ supplierColumnIndex);
+        int supplierColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SUPPLIER);
         //int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
 
         //Read the pet attributes from the cursor for the current pet
+        int ringStock = cursor.getInt(stockColumnIndex);
         String ringSupplier = cursor.getString(supplierColumnIndex);
-        String ringStock = String.valueOf(cursor.getInt(stockColumnIndex));
-        //String ringQuantity = String.valueOf(cursor.getInt(quantityColumnIndex));
+        //String ringQuantity = cursor.getString(quantityColumnIndex);
 
         //Populate fields with extracted properties
-        textViewSupplier.setText(ringSupplier);
         textViewStock.setText(ringStock);
+        textViewSupplier.setText(ringSupplier);
         //textViewQuantity.setText(ringQuantity);
 
     }
