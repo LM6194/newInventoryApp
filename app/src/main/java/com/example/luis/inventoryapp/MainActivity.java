@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.luis.inventoryapp.data.InventoryContract.InventoryEntry;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int RING_LOADER = 0;
 
     InventoryCursorAdapter mCursorAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +61,9 @@ public class MainActivity extends AppCompatActivity implements
         ringListView.setAdapter(mCursorAdapter);
 
         //Setup item click listener.
-        ringListView.setOnItemClickListener(new OnItemClickListener() {
+        ringListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Create new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(MainActivity.this, ItemEditorActivity.class);
 
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+        
 
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
@@ -141,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements
         // you will actually use after this query.
         String[] projection = {
                 InventoryEntry._ID,
-                InventoryEntry.COLUMN_SUPPLIER,
-                InventoryEntry.COLUMN_DETAILS,
+                InventoryEntry.COLUMN_STOCK_ID,
+                InventoryEntry.COLUMN_QUANTITY
         };
         //This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this, //Parent activity context

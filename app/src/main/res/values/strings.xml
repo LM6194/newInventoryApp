@@ -5,7 +5,7 @@
     <string name="item_editor_activity">Add jewelery item</string>
 
     <!-- ID for the stock id -->
-    <string name="stock_id">Stock id</string>
+    <string name="stock_id">Stock id :</string>
 
     <!-- Hint for the edit view stock id -->
     <string name="item_stock_id">type stock id</string>
@@ -35,7 +35,7 @@
     <string name="type_details">type Description</string>
 
     <!-- Label for the quantity textView-->
-    <string name="quantity">Quantity</string>
+    <string name="quantity">Quantity :</string>
 
     <!-- hint for quantity -->
     <string name="item_quantity">type Quantity</string>
@@ -102,4 +102,11 @@
     <string name="sold_button">Sold</string>
     <string name="empty_view_title_text">Your database is empty</string>
     <string name="empty_view_subtitle_text">Get started by adding a ring</string>
+    <string name="sale">Sale</string>
+    <string name="empty_stock_id">Stock id cannot be empty</string>
+    <string name="empty_supplier_name">supplier name cannot be empty</string>
+    <string name="empty_details">The details field cannot be empty</string>
+    <string name="empty_quantity">The quantity field cannot be empty</string>
+    <string name="empty_cost">The cost field cannot be empty</string>
+    <string name="empty_price">The Price field cannot be empty</string>
 </resources>

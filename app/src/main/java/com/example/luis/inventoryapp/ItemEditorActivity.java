@@ -21,12 +21,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.luis.inventoryapp.data.InventoryContract.InventoryEntry;
 
 
-
+import static android.text.TextUtils.*;
 import static java.lang.String.*;
 
 /**
@@ -35,12 +36,14 @@ import static java.lang.String.*;
 
 public class ItemEditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
-
     /**
      * Identifier for the ring data loader
      */
     private static final int RING_LOADER = 0;
-
+    /**
+     * quantity variable
+     */
+    private int mQuantity;
     /**
      * EditText field to enter stock id
      */
@@ -70,6 +73,16 @@ public class ItemEditorActivity extends AppCompatActivity implements
      * EditText field to enter price
      */
     private EditText mPriceEditText;
+
+    /**
+     * increase button
+     */
+    private Button mIncreaseButton;
+
+    /**
+     * decrease buttom
+     */
+    private Button mDecreaseButton;
 
     /**
      * Content URI for the existing ring(null if it's a new ring)
@@ -129,7 +142,7 @@ public class ItemEditorActivity extends AppCompatActivity implements
                 int quantityField = Integer.parseInt(quantityNumber);
                 if (quantityField > 0) {
                     quantityField = quantityField - 1;
-                    EditText textElement = findViewById(R.id.edit_quantity);
+                    TextView textElement = findViewById(R.id.edit_quantity);
                     Log.i("Luis", "value of quantityField is: " +
                             quantityField);
                     textElement.setText(String.valueOf(quantityField));
@@ -158,12 +171,15 @@ public class ItemEditorActivity extends AppCompatActivity implements
 
 
         // Find all relevant views that we will need to read user input from
-        mStockIdEditText = (EditText) findViewById(R.id.edit_stock_id);
-        mSupplierNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
-        mDetailsEditText = (EditText) findViewById(R.id.edit_details);
-        mQuantityEditText = (EditText) findViewById(R.id.edit_quantity);
-        mCostEditText = (EditText) findViewById(R.id.edit_cost);
-        mPriceEditText = (EditText) findViewById(R.id.edit_price);
+        mStockIdEditText = findViewById(R.id.edit_stock_id);
+        mSupplierNameEditText = findViewById(R.id.edit_supplier_name);
+        mDetailsEditText = findViewById(R.id.edit_details);
+        mQuantityEditText = findViewById(R.id.show_quantity);
+        mCostEditText = findViewById(R.id.edit_cost);
+        mPriceEditText = findViewById(R.id.edit_price);
+        mIncreaseButton = findViewById(R.id.increase_button);
+        mDecreaseButton = findViewById(R.id.decrease_button);
+
 
         //Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us Know of there are unsaved changes
@@ -174,6 +190,54 @@ public class ItemEditorActivity extends AppCompatActivity implements
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mCostEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
+        mDecreaseButton.setOnTouchListener(mTouchListener);
+        mIncreaseButton.setOnTouchListener(mTouchListener);
+
+        /**
+         * The method to increase the quantity and show user when they need to use the
+         * right input
+         */
+        mIncreaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String quantity = mQuantityEditText.getText().toString();
+                if (TextUtils.isEmpty(quantity)) {
+                    Toast.makeText(ItemEditorActivity.this, "The quantity cannot be empty",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    mQuantity = Integer.parseInt(quantity);
+                    mQuantityEditText.setText(String.valueOf(mQuantity + 1));
+                }
+            }
+        });
+
+        /**
+         * The method to decrease the quantity and show user when they need to use the
+         * right input
+         */
+        mDecreaseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String quantity = mQuantityEditText.getText().toString();
+                if (TextUtils.isEmpty(quantity)) {
+                    Toast.makeText(ItemEditorActivity.this,
+                            "The quantity cannot be empty", Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    mQuantity = Integer.parseInt(quantity);
+
+                    // validate if quantity is greater or equal to 0
+                    if ((mQuantity - 1) >= 0) {
+                        mQuantityEditText.setText(String.valueOf(mQuantity - 1));
+                    } else {
+                        Toast.makeText(ItemEditorActivity.this, "The quantity cannot be a negative number",
+                                Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -181,10 +245,6 @@ public class ItemEditorActivity extends AppCompatActivity implements
      */
     private void saveRing() {
 
-        int stock = -1;
-        int quantity = -1;
-        int cost = -1;
-        int price = -1;
 
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
@@ -199,121 +259,59 @@ public class ItemEditorActivity extends AppCompatActivity implements
         // Check if this is supposed to be a new ring
         // and check if all the fields in the editor are blank
         if (mCurrentRingUri == null &&
-                TextUtils.isEmpty(stockNumber) && TextUtils.isEmpty(supplierName) &&
-                TextUtils.isEmpty(details) && TextUtils.isEmpty(quantityNumber) &&
-                TextUtils.isEmpty(costNumber) && TextUtils.isEmpty(priceNumber)) {
+                isEmpty(stockNumber) && isEmpty(supplierName) &&
+                isEmpty(details) && isEmpty(quantityNumber) &&
+                isEmpty(costNumber) && isEmpty(priceNumber)) {
             // Since no fields were modified, we can return early without creating a new ring.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
         }
 
-        else if (stockNumber.equals("")  || quantityNumber.equals("") ||
-                costNumber.equals("") || priceNumber.equals("")){
-
-            // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-            // Create a click listener to handle the user confirming that changes should be discarded.
-            //showUnFinishForm();
-            OnClickListener discardButtonClickListener =
-                    new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // User clicked "Discard" button, close the current activity.
-                            finish();
-                        }
-                    };
-
-            // Show dialog that there are unsaved changes
-            showUnFinishForm(discardButtonClickListener);
+        // Check if the stock id field is not empty
+        if (TextUtils.isEmpty(stockNumber)) {
+            mStockIdEditText.setError(getString(R.string.empty_stock_id));
+            return;
         }
 
-
-        if(stockNumber.equals("")) {
-            //showUnFinishForm();
-            OnClickListener discardButtonClickListener =
-                    new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // User clicked "Discard" button, close the current activity.
-                            finish();
-                        }
-                    };
-
-            // Show dialog that there are unsaved changes
-            showUnFinishForm(discardButtonClickListener);
-        }
-        else {
-            stock = Integer.parseInt(stockNumber);
+        // Check if the suppliers name is not empty
+        if (TextUtils.isEmpty(supplierName)) {
+            mSupplierNameEditText.setError(getString(R.string.empty_supplier_name));
+            return;
         }
 
-
-        if (quantityNumber.equals("")){
-            //showUnFinishForm();
-            OnClickListener discardButtonClickListener =
-                    new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // User clicked "Discard" button, close the current activity.
-                            finish();
-                        }
-                    };
-
-            // Show dialog that there are unsaved changes
-            showUnFinishForm(discardButtonClickListener);
-        }
-        else {
-            quantity = Integer.parseInt(quantityNumber);
+        // Check ir the details is not empty
+        if (TextUtils.isEmpty(details)) {
+            mDetailsEditText.setError(getString(R.string.empty_details));
+            return;
         }
 
-        if (costNumber.equals("")){
-            //showUnFinishForm();
-            OnClickListener discardButtonClickListener =
-                    new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // User clicked "Discard" button, close the current activity.
-                            finish();
-                        }
-                    };
-
-            // Show dialog that there are unsaved changes
-            showUnFinishForm(discardButtonClickListener);
-        }
-        else{
-            cost = Integer.parseInt(costNumber);
+        // Check if the quantity id field is not empty
+        if (TextUtils.isEmpty(quantityNumber)) {
+            mQuantityEditText.setError(getString(R.string.empty_quantity));
+            return;
         }
 
-        if (priceNumber.equals("")){
-            //showUnFinishForm();
-            OnClickListener discardButtonClickListener =
-                    new OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // User clicked "Discard" button, close the current activity.
-                            finish();
-                        }
-                    };
-
-            // Show dialog that there are unsaved changes
-            showUnFinishForm(discardButtonClickListener);
-        }
-        else {
-            price = Integer.parseInt(priceNumber);
+        // Check if the cost field is not empty
+        if (TextUtils.isEmpty(costNumber)) {
+            mCostEditText.setError(getString(R.string.empty_cost));
+            return;
         }
 
-
-
-
+        // Check if the price field is not empty
+        if (TextUtils.isEmpty(priceNumber)) {
+            mPriceEditText.setError(getString(R.string.empty_price));
+            return;
+        }
 
 
         // Create a ContentValues object where column names are the keys.
         ContentValues values = new ContentValues();
-        values.put(InventoryEntry.COLUMN_STOCK_ID, stock);
+        values.put(InventoryEntry.COLUMN_STOCK_ID, stockNumber);
         values.put(InventoryEntry.COLUMN_SUPPLIER, supplierName);
         values.put(InventoryEntry.COLUMN_DETAILS, details);
-        values.put(InventoryEntry.COLUMN_QUANTITY, quantity);
-        values.put(InventoryEntry.COLUMN_COST, cost);
-        values.put(InventoryEntry.COLUMN_PRICE, price);
-
+        values.put(InventoryEntry.COLUMN_QUANTITY, quantityNumber);
+        values.put(InventoryEntry.COLUMN_COST, costNumber);
+        values.put(InventoryEntry.COLUMN_PRICE, priceNumber);
 
 
         // Determine if this is a new or existing ring by checking if MCurrentRingUri is null or not
@@ -330,10 +328,10 @@ public class ItemEditorActivity extends AppCompatActivity implements
                 Toast.makeText(this, getString(R.string.editor_insert_ring_successful),
                         Toast.LENGTH_LONG).show();
             }
-        }else {
+        } else {
             // Otherwise this is an EXISTING ring , so update the ring with content URI: mCurrentRingUri
             // and pass in the new ContentValues. Pass in null for the selection and selection args
-            // mCurrentRingUri will already indentify the correct row in the database that
+            // mCurrentRingUri will already identify the correct row in the database that
             //wi want to modify.
             int rowsAffected = getContentResolver().update(mCurrentRingUri, values, null, null);
             // Show a toast message depending on whether or not the update was successful.
@@ -400,7 +398,7 @@ public class ItemEditorActivity extends AppCompatActivity implements
                 // Otherwise if there are unsaved changes, setup a dialog to warn the user.
                 // Create a click listener to handle the user confirming that
                 // changes should be discarded.
-                OnClickListener discardButtonClickListener =
+                DialogInterface.OnClickListener discardButtonClickListener =
                         new OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -428,7 +426,7 @@ public class ItemEditorActivity extends AppCompatActivity implements
 
         // Otherwise if there are unsaved changes, setup a dialog to warn the user.
         // Create a click listener to handle the user confirming that changes should be discarded.
-        OnClickListener discardButtonClickListener =
+        DialogInterface.OnClickListener discardButtonClickListener =
                 new OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -509,7 +507,6 @@ public class ItemEditorActivity extends AppCompatActivity implements
 
     }
 
-
     /**
      * Show a dialog that warns the user there are unsaved changes that will be lost
      * if they continue leaving the editor.
@@ -518,13 +515,13 @@ public class ItemEditorActivity extends AppCompatActivity implements
      *                                   the user confirms they want to discard their changes
      */
     private void showUnsavedChangesDialog(
-            OnClickListener discardButtonClickListener) {
+            DialogInterface.OnClickListener discardButtonClickListener) {
         // Create an AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new OnClickListener() {
+        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
                 // and continue editing the ring.
@@ -549,10 +546,11 @@ public class ItemEditorActivity extends AppCompatActivity implements
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-           public void onClick(DialogInterface dialog, int id) {
-               // User clicked the "Delete" button, so delete the ring.
-               deleteRing();
-           }});
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the ring.
+                deleteRing();
+            }
+        });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
@@ -593,29 +591,5 @@ public class ItemEditorActivity extends AppCompatActivity implements
         finish();
     }
 
-    /**
-     * Prompt the  user that not all the fields are complete
-     */
-    private void showUnFinishForm(OnClickListener discardButtonClickListener) {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the positive and negative buttons on the dialog.
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.unsaved_changes_dialog_msg);
-        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the ring.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-
-        });
-
-        // Create and show the AlertDialog
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
 
 }

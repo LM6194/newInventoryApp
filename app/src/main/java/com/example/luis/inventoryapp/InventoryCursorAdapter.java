@@ -64,23 +64,29 @@ public class InventoryCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         // find fields to populate in inflate template
         TextView textViewStock = view.findViewById(R.id.tvStock);
-        TextView textViewSupplier = view.findViewById(R.id.tvSupplier);
-        //TextView textViewQuantity = view.findViewById(R.id.tvQuantity);
+        //TextView textViewSupplier = view.findViewById(R.id.tvSupplier);
+        TextView textViewQuantity = view.findViewById(R.id.edit_quantity);
 
         //Find the columns of rings attributes that we're  interested in
         int stockColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_STOCK_ID);
-        int supplierColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SUPPLIER);
-        //int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
+        //int supplierColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_SUPPLIER);
+        int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
+
+
+
+
 
         //Read the pet attributes from the cursor for the current pet
         int ringStock = cursor.getInt(stockColumnIndex);
-        String ringSupplier = cursor.getString(supplierColumnIndex);
-        //String ringQuantity = cursor.getString(quantityColumnIndex);
+        //String ringSupplier = cursor.getString(supplierColumnIndex);
+        int ringQuantity = cursor.getInt(quantityColumnIndex);
+
+
 
         //Populate fields with extracted properties
-        textViewStock.setText(ringStock);
-        textViewSupplier.setText(ringSupplier);
-        //textViewQuantity.setText(ringQuantity);
+        textViewStock.setText("" + ringStock);
+        //textViewSupplier.setText(ringSupplier);
+        textViewQuantity.setText("" + ringQuantity);
 
     }
 }
