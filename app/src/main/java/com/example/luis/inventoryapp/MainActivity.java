@@ -11,16 +11,23 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.luis.inventoryapp.data.InventoryContract.InventoryEntry;
 
@@ -30,6 +37,27 @@ public class MainActivity extends AppCompatActivity implements
     private static final int RING_LOADER = 0;
 
     InventoryCursorAdapter mCursorAdapter;
+
+    private TextView mEditQuantity;
+
+    private int quantity;
+
+//    /**
+//     * Boolean flag that keeps track of whether the ring has been edited (true) or not (false)
+//     */
+//     boolean mRingHasChanged = false;
+//
+//    /**
+//     * OnTouchListener that listens for any user touches on a View, implying that they are modifying
+//     * the view, and we change the  mRingHasChanged boolean to true.
+//     */
+//    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+//        @Override
+//        public boolean onTouch(View v, MotionEvent event) {
+//            mRingHasChanged = true;
+//            return false;
+//        }
+//    };
 
 
     @Override
@@ -85,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements
         // Prepare the loader. Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(RING_LOADER, null,this);
+
     }
 
     /**

@@ -36,6 +36,11 @@ import static java.lang.String.*;
 
 public class ItemEditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    /**
+     * set the quantity text view to show a 0
+     */
+    int qty = 0;
     /**
      * Identifier for the ring data loader
      */
@@ -110,6 +115,7 @@ public class ItemEditorActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.item_editor_activity);
+
 
         //Examine the intent that was use to launch this activity,
         //in order to figure out if we're creating a new ring or editing an existing one.
@@ -192,6 +198,8 @@ public class ItemEditorActivity extends AppCompatActivity implements
         mPriceEditText.setOnTouchListener(mTouchListener);
         mDecreaseButton.setOnTouchListener(mTouchListener);
         mIncreaseButton.setOnTouchListener(mTouchListener);
+
+        mQuantityEditText.setText(String.valueOf(qty));
 
         /**
          * The method to increase the quantity and show user when they need to use the
