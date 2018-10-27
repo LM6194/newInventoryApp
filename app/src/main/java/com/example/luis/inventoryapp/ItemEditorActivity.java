@@ -85,7 +85,7 @@ public class ItemEditorActivity extends AppCompatActivity implements
     private Button mIncreaseButton;
 
     /**
-     * decrease buttom
+     * decrease button
      */
     private Button mDecreaseButton;
 

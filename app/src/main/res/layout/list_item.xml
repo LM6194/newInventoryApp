@@ -76,7 +76,8 @@
         android:layout_width="60dp"
         android:layout_height="match_parent"
         android:src="@drawable/shopping_cart"
-        android:text="Sale" />
+        android:text="Sale"
+        android:focusable="false"/>
 
 
 </LinearLayout>

@@ -38,28 +38,6 @@ public class MainActivity extends AppCompatActivity implements
 
     InventoryCursorAdapter mCursorAdapter;
 
-    private TextView mEditQuantity;
-
-    private int quantity;
-
-//    /**
-//     * Boolean flag that keeps track of whether the ring has been edited (true) or not (false)
-//     */
-//     boolean mRingHasChanged = false;
-//
-//    /**
-//     * OnTouchListener that listens for any user touches on a View, implying that they are modifying
-//     * the view, and we change the  mRingHasChanged boolean to true.
-//     */
-//    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
-//        @Override
-//        public boolean onTouch(View v, MotionEvent event) {
-//            mRingHasChanged = true;
-//            return false;
-//        }
-//    };
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
