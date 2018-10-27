@@ -117,8 +117,8 @@ public class MainActivity extends AppCompatActivity implements
      * Helper method to delete all pets in the database.
      */
     private void deleteAllRings() {
-        int rowsDeleted = getContentResolver().delete(InventoryEntry.CONTENT_URI, null, null);
-        Log.v("MainActivity", rowsDeleted + " rows deleted from ring database");
+         getContentResolver().delete(InventoryEntry.CONTENT_URI, null, null);
+
     }
 
     @Override
